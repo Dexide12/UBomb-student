@@ -5,28 +5,38 @@
 package fr.ubx.poo.game;
 
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Properties;
 
 import fr.ubx.poo.model.go.character.Player;
 
 public class Game {
 
-    private final World world;
+    private final ArrayList<World> worlds;
     private final Player player;
     private final String worldPath;
-    public int initPlayerLives;
+    private String levelFilePrefix;
+    private int initPlayerLives;
+    private int nbLevels;
+    private int currentLevel;
 
     public Game(String worldPath) {
-        world = new WorldStatic();
+        worlds = new ArrayList<>();
+        //If one of the repository name include in the path contains a blank character in his name while you are using windows,
+        // the path is going to contains %20 instead of the blank character. This fix the issue
+        if(worldPath.contains("%20")) {
+            worldPath = worldPath.replaceAll("%20", " ");
+        }
         this.worldPath = worldPath;
         loadConfig(worldPath);
+        //worlds.add(new WorldStatic());
+        loadLevels(worldPath);
+        currentLevel = 0;
         Position positionPlayer = null;
         try {
-            positionPlayer = world.findPlayer();
+            positionPlayer = worlds.get(currentLevel).findPlayer();
             player = new Player(this, positionPlayer);
         } catch (PositionNotFoundException e) {
             System.err.println("Position not found : " + e.getLocalizedMessage());
@@ -44,18 +54,54 @@ public class Game {
             // load the configuration file
             prop.load(input);
             initPlayerLives = Integer.parseInt(prop.getProperty("lives", "3"));
+            nbLevels = Integer.parseInt(prop.getProperty("levels", "1"));
+            levelFilePrefix = prop.getProperty("prefix", "level");
         } catch (IOException ex) {
             System.err.println("Error loading configuration");
         }
     }
 
+    private void loadLevels(String path) {
+        for(int i = 1; i <= nbLevels; i++) {
+            ArrayList<String> fileLines = new ArrayList<>();
+            String currentFileName = levelFilePrefix + i + ".txt";
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(new File(path, currentFileName)));
+                String line;
+                int lineSize = 0;
+                while((line = reader.readLine()) != null) {
+                    if(lineSize == 0) {
+                        lineSize = line.length();
+                    } else if(lineSize != line.length()) {
+                        throw new LevelFileFormatException("file " + currentFileName + " has different line size");
+                    }
+                    fileLines.add(line);
+                }
+                WorldEntity[][] level = new WorldEntity[fileLines.size()][lineSize];
+                for(int l = 0; l < fileLines.size(); l++) {
+                    char[] currentLine = fileLines.get(l).toCharArray();
+                    for(int c = 0; c < currentLine.length; c++) {
+                        Optional<WorldEntity> value = WorldEntity.fromCode(currentLine[c]);
+                        if (!value.isPresent()) {
+                            throw new LevelFileFormatException("file " + currentFileName + " contains " + currentLine[c] + " which is not a valid character");
+                        }
+                        level[l][c] = value.get();
+                    }
+                }
+                worlds.add(new World(level));
+            } catch (IOException ex) {
+                System.err.println("Error during the load of file " + currentFileName);
+            } catch (LevelFileFormatException ex) {
+                System.err.println(ex.getMessage());
+            }
+        }
+    }
+
     public World getWorld() {
-        return world;
+        return worlds.get(2);
     }
 
     public Player getPlayer() {
         return this.player;
     }
-
-
 }
