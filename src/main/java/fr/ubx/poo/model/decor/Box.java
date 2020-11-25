@@ -1,8 +1,4 @@
-/*
- * Copyright (c) 2020. Laurent Réveillère
- */
-
-package fr.ubx.poo.model.go.character;
+package fr.ubx.poo.model.decor;
 
 import fr.ubx.poo.game.Direction;
 import fr.ubx.poo.game.Position;
@@ -11,26 +7,15 @@ import fr.ubx.poo.model.go.GameObject;
 import fr.ubx.poo.game.Game;
 import fr.ubx.poo.model.decor.*;
 
-public class Player extends GameObject implements Movable {
+public class Box extends Decor {
 
+    /*protected final Game game;
+    private Position position;
     private final boolean alive = true;
     Direction direction;
     private boolean moveRequested = false;
-    private int lives = 1;
-    private boolean winner;
 
-    public Player(Game game, Position position) {
-        super(game, position);
-        this.direction = Direction.S;
-        this.lives = game.getInitPlayerLives();
-    }
-
-    public int getLives() {
-        return lives;
-    }
-
-    public Direction getDirection() {
-        return direction;
+    public Box() {
     }
 
     public void requestMove(Direction direction) {
@@ -47,7 +32,7 @@ public class Player extends GameObject implements Movable {
             return false;
         }
         if (game.getWorld().get(nextPos) instanceof Stone
-            || game.getWorld().get(nextPos) instanceof Tree){
+                || game.getWorld().get(nextPos) instanceof Tree){
             return false;
         }
         return true;
@@ -67,12 +52,19 @@ public class Player extends GameObject implements Movable {
         moveRequested = false;
     }
 
-    public boolean isWinner() {
-        return winner;
+
+
+
+    public Position getPosition() {
+        return position;
     }
 
-    public boolean isAlive() {
-        return alive;
+    public void setPosition(Position position) {
+        this.position = position;
+    }*/
+    @Override
+    public String toString() {
+        return "Box";
     }
 
 }
