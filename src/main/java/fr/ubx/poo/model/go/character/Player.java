@@ -10,6 +10,7 @@ import fr.ubx.poo.model.Movable;
 import fr.ubx.poo.model.go.GameObject;
 import fr.ubx.poo.game.Game;
 import fr.ubx.poo.model.decor.*;
+import javafx.geometry.Pos;
 
 public class Player extends GameObject implements Movable {
 
@@ -44,6 +45,18 @@ public class Player extends GameObject implements Movable {
             this.direction = direction;
         }
         moveRequested = true;
+    }
+
+    public void requestOpenDoor() {
+        if(keys > 0) {
+            Position nextPos = direction.nextPosition(getPosition());
+            Decor dec = game.getWorld().get(nextPos);
+            if(dec instanceof Door) {
+                if(((Door) dec).open()) {
+                    keys -= 1;
+                }
+            }
+        }
     }
 
     @Override
@@ -86,5 +99,4 @@ public class Player extends GameObject implements Movable {
     public int getBombsRange() { return bombsRange; }
 
     public int getBombCapacity() { return bombCapacity; }
-
 }

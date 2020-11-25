@@ -107,7 +107,7 @@ public final class GameEngine {
             player.requestMove(Direction.N);
         }
         if(input.isKey()) {
-            //Todo try to open door
+            player.requestOpenDoor();
         }
         if(input.isBomb()) {
             //Todo try to create a bomb

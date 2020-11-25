@@ -27,11 +27,13 @@ public final class SpriteFactory {
             return new SpriteDecor(layer, factory.get(TREE), position);
         if (decor instanceof Box)
             return new SpriteDecor(layer, factory.get(BOX), position);
-        if (decor instanceof Door)
-            if ((Door)decor.isOpen())
+        if (decor instanceof Door) {
+            Door door = (Door) decor;
+            if (door.getIsOpen())
                 return new SpriteDecor(layer, factory.get(DOOR_OPENED), position);
             else
                 return new SpriteDecor(layer, factory.get(DOOR_CLOSED), position);
+        }
         return null;
     }
 
