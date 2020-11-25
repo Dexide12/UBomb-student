@@ -17,12 +17,18 @@ public class Player extends GameObject implements Movable {
     Direction direction;
     private boolean moveRequested = false;
     private int lives = 1;
+    private int keys;
+    private int bombsRange;
+    private int bombCapacity;
     private boolean winner;
 
     public Player(Game game, Position position) {
         super(game, position);
         this.direction = Direction.S;
         this.lives = game.getInitPlayerLives();
+        this.keys = 0;
+        this.bombsRange = 1;
+        this.bombCapacity = 1;
     }
 
     public int getLives() {
@@ -74,5 +80,11 @@ public class Player extends GameObject implements Movable {
     public boolean isAlive() {
         return alive;
     }
+
+    public int getKeys() { return keys; }
+
+    public int getBombsRange() { return bombsRange; }
+
+    public int getBombCapacity() { return bombCapacity; }
 
 }
