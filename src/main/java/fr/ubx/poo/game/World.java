@@ -5,6 +5,7 @@
 package fr.ubx.poo.game;
 
 import fr.ubx.poo.model.decor.Decor;
+import fr.ubx.poo.model.decor.Door;
 
 import java.util.Collection;
 import java.util.Map;
@@ -30,6 +31,20 @@ public class World {
             }
         }
         throw new PositionNotFoundException("Player");
+    }
+
+    public Position getDoorPosition(boolean isEntryDoor) throws PositionNotFoundException {
+        for(int x = 0; x < dimension.width; x++) {
+            for(int y = 0; y < dimension.height; y++) {
+                Decor d = grid.get(new Position(x, y));
+                if(d instanceof Door) {
+                    if(isEntryDoor != ((Door) d).getLeadToNext()) {
+                        return new Position(x, y);
+                    }
+                }
+            }
+        }
+        throw new PositionNotFoundException("Level entry door");
     }
 
     public Decor get(Position position) {

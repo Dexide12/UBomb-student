@@ -5,6 +5,10 @@
 package fr.ubx.poo.engine;
 
 import fr.ubx.poo.game.Direction;
+import fr.ubx.poo.game.Position;
+import fr.ubx.poo.game.PositionNotFoundException;
+import fr.ubx.poo.model.decor.Decor;
+import fr.ubx.poo.model.decor.Door;
 import fr.ubx.poo.view.sprite.Sprite;
 import fr.ubx.poo.view.sprite.SpriteFactory;
 import fr.ubx.poo.game.Game;
@@ -51,8 +55,8 @@ public final class GameEngine {
         Group root = new Group();
         layer = new Pane();
 
-        int height = game.getWorld().dimension.height;
-        int width = game.getWorld().dimension.width;
+        int height = game.getCurrentWorld().dimension.height;
+        int width = game.getCurrentWorld().dimension.width;
         int sceneWidth = width * Sprite.size;
         int sceneHeight = height * Sprite.size;
         Scene scene = new Scene(root, sceneWidth, sceneHeight + StatusBar.height);
@@ -67,9 +71,9 @@ public final class GameEngine {
         root.getChildren().add(layer);
         statusBar = new StatusBar(root, sceneWidth, sceneHeight, game);
         // Create decor sprites
-        game.getWorld().forEach( (pos,d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
+        sprites.clear();
+        game.getCurrentWorld().forEach( (pos, d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
         spritePlayer = SpriteFactory.createPlayer(layer, player);
-
     }
 
     protected final void buildAndSetGameLoop() {
@@ -107,7 +111,10 @@ public final class GameEngine {
             player.requestMove(Direction.N);
         }
         if(input.isKey()) {
-            player.requestOpenDoor();
+            //spritesNeedUpdate = (player.requestOpenDoor())? true : spritesNeedUpdate;
+            if (player.requestOpenDoor()) {
+                updateSprite(player.getDirection().nextPosition(player.getPosition()));
+            }
         }
         if(input.isBomb()) {
             //Todo try to create a bomb
@@ -146,12 +153,44 @@ public final class GameEngine {
             gameLoop.stop();
             showMessage("Gagné", Color.BLUE);
         }
+
+        if(player.getHasMove()) {
+            Decor d = game.getCurrentWorld().get(player.getPosition());
+            if(d instanceof Door) {
+                Door door = (Door) d;
+                if (door.getIsOpen()) {
+                    if(door.getLeadToNext()) {
+                        game.setCurrentLevel(true);
+                        createAndDisplayScene(true);
+                    } else {
+                        game.setCurrentLevel(false);
+                        createAndDisplayScene(false);
+                    }
+                }
+            }
+        }
+        player.resetHasMove();
+    }
+
+    private void createAndDisplayScene(boolean next) {
+        initialize(stage, game);
+        try {
+            player.setPosition(game.getCurrentWorld().getDoorPosition(next));
+            player.setDirection(Direction.S);
+        } catch (PositionNotFoundException e) {
+            System.err.println("Error, Level does not contain an entry door");
+        }
     }
 
     private void render() {
         sprites.forEach(Sprite::render);
         // last rendering to have player in the foreground
         spritePlayer.render();
+    }
+
+    private void updateSprite(Position spritePosition) {
+        sprites.remove(sprites.stream().filter(e->e.getPosition().equals(spritePosition)).findFirst().get());
+        sprites.add(SpriteFactory.createDecor(layer, spritePosition, game.getCurrentWorld().get(spritePosition)));
     }
 
     public void start() {

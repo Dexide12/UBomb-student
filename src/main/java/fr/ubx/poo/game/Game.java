@@ -6,6 +6,9 @@ package fr.ubx.poo.game;
 
 
 import java.io.*;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Properties;
@@ -24,11 +27,7 @@ public class Game {
 
     public Game(String worldPath) {
         worlds = new ArrayList<>();
-        //If one of the repository name include in the path contains a blank character in his name while you are using windows,
-        // the path is going to contains %20 instead of the blank character. This fix the issue
-        if(worldPath.contains("%20")) {
-            worldPath = worldPath.replaceAll("%20", " ");
-        }
+        worldPath = URLDecoder.decode(worldPath, StandardCharsets.UTF_8);
         this.worldPath = worldPath;
         loadConfig(worldPath);
         //worlds.add(new WorldStatic());
@@ -97,11 +96,19 @@ public class Game {
         }
     }
 
-    public World getWorld() {
-        return worlds.get(2);
+    public World getCurrentWorld() {
+        return worlds.get(currentLevel);
+    }
+
+    public void setCurrentLevel(boolean isNext) {
+        currentLevel += (isNext)? 1 : -1;
     }
 
     public Player getPlayer() {
         return this.player;
+    }
+
+    public int getCurrentLevel() {
+        return currentLevel;
     }
 }
