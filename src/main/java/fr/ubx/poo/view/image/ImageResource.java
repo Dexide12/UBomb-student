@@ -25,8 +25,11 @@ public enum ImageResource {
     TREE("tree.png"),
     BOX("box.png"),
     DOOR_OPENED("door_opened.png"),
-    DOOR_CLOSED("door_closed.png");
-
+    DOOR_CLOSED("door_closed.png"),
+    BOMB_4("bomb4.png"),
+    BOMB_3("bomb3.png"),
+    BOMB_2("bomb2.png"),
+    BOMB_1("bomb1.png");
     private final String FileName;
 
     ImageResource(String fileName) {

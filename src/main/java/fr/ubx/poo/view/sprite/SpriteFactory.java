@@ -12,6 +12,7 @@ import fr.ubx.poo.model.decor.Stone;
 import fr.ubx.poo.model.decor.Tree;
 import fr.ubx.poo.model.decor.Box;
 import fr.ubx.poo.model.decor.Door;
+import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.character.Player;
 import fr.ubx.poo.view.image.ImageFactory;
 import javafx.scene.layout.Pane;
@@ -39,5 +40,9 @@ public final class SpriteFactory {
 
     public static Sprite createPlayer(Pane layer, Player player) {
         return new SpritePlayer(layer, player);
+    }
+
+    public static Sprite createBomb(Pane layer, Bomb bomb) {
+        return new SpriteBomb(layer, bomb);
     }
 }

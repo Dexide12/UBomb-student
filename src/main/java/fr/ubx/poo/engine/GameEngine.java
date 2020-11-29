@@ -9,6 +9,7 @@ import fr.ubx.poo.game.Position;
 import fr.ubx.poo.game.PositionNotFoundException;
 import fr.ubx.poo.model.decor.Decor;
 import fr.ubx.poo.model.decor.Door;
+import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.view.sprite.Sprite;
 import fr.ubx.poo.view.sprite.SpriteFactory;
 import fr.ubx.poo.game.Game;
@@ -26,6 +27,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -41,6 +43,7 @@ public final class GameEngine {
     private Input input;
     private Stage stage;
     private Sprite spritePlayer;
+    private List<Sprite> bombsSprites = new ArrayList<>();
 
     public GameEngine(final String windowTitle, Game game, final Stage stage) {
         this.windowTitle = windowTitle;
@@ -111,13 +114,12 @@ public final class GameEngine {
             player.requestMove(Direction.N);
         }
         if(input.isKey()) {
-            //spritesNeedUpdate = (player.requestOpenDoor())? true : spritesNeedUpdate;
             if (player.requestOpenDoor()) {
                 updateSprite(player.getDirection().nextPosition(player.getPosition()));
             }
         }
         if(input.isBomb()) {
-            //Todo try to create a bomb
+            player.requestSpawnBomb();
         }
         input.clear();
     }
@@ -145,7 +147,7 @@ public final class GameEngine {
     private void update(long now) {
         player.update(now);
 
-        if (player.isAlive() == false) {
+        if (!player.isAlive()) {
             gameLoop.stop();
             showMessage("Perdu!", Color.RED);
         }
@@ -170,6 +172,20 @@ public final class GameEngine {
             }
         }
         player.resetHasMove();
+
+        for (Iterator<Bomb> it = player.getDeployedBombs(); it.hasNext(); ) {
+            Bomb bomb = it.next();
+            boolean notFound = true;
+            for(Sprite bombSprite : bombsSprites) {
+                if (bombSprite.getPosition().equals(bomb.getPosition())) {
+                    notFound = false;
+                }
+            }
+            if(notFound) {
+                bombsSprites.add(SpriteFactory.createBomb(layer, bomb));
+            }
+        }
+
     }
 
     private void createAndDisplayScene(boolean next) {
@@ -184,6 +200,7 @@ public final class GameEngine {
 
     private void render() {
         sprites.forEach(Sprite::render);
+        bombsSprites.forEach(Sprite::render);
         // last rendering to have player in the foreground
         spritePlayer.render();
     }

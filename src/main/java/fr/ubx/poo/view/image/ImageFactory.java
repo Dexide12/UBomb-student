@@ -22,6 +22,10 @@ public final class ImageFactory {
             DIGIT_5, DIGIT_6, DIGIT_7, DIGIT_8, DIGIT_9,
     };
 
+    private final ImageResource[] bombStates = new ImageResource[] {
+            BOMB_1, BOMB_2, BOMB_3, BOMB_4
+    };
+
     private ImageFactory() {
         images = new Image[ImageResource.values().length];
     }
@@ -51,6 +55,12 @@ public final class ImageFactory {
         if (i < 0 || i > 9)
             throw new IllegalArgumentException();
         return get(digits[i]);
+    }
+
+    public Image getBombImage(int i) {
+        if(i < 1 || i > 4)
+            throw new IllegalArgumentException();
+        return get(bombStates[i - 1]);
     }
 
     public Image getPlayer(Direction direction) {
