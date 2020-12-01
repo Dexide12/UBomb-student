@@ -1,29 +1,37 @@
 package fr.ubx.poo.model.go;
 
 import fr.ubx.poo.engine.Timer;
+import fr.ubx.poo.game.Direction;
 import fr.ubx.poo.game.Game;
 import fr.ubx.poo.game.Position;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Bomb extends GameObject {
 
-    private static final int timerDuration = 4;
+    private static final int TIMER_DURATION = 4;
+    private int level;
     private final Timer timer;
     private int currentImageNumber;
+    private int explosionRange;
     private boolean imageNumberHasChange = true;
     private boolean hasExploded = false;
 
-    public Bomb(Game game, Position position, long now) {
+    public Bomb(Game game, Position position, long now, int explosionRange, int level) {
         super(game, position);
-        timer = new Timer(now, timerDuration);
+        this.explosionRange = explosionRange;
+        timer = new Timer(now, TIMER_DURATION);
         timer.start();
         currentImageNumber = 4;
+        this.level = level;
     }
 
     public void update(long now) {
         if(!hasExploded) {
             timer.update(now);
             if (!timer.getIsRunning()) {
-                explode();
+                explode(now);
                 hasExploded = true;
             } else {
                 int tmp = calculateCurrentImageNumber();
@@ -35,8 +43,15 @@ public class Bomb extends GameObject {
         }
     }
 
-    private void explode() {
-        //Todo explosion handler
+    private void explode(long now) {
+        List<Direction> directions = new ArrayList<>() {{
+            add(Direction.N);
+            add(Direction.E);
+            add(Direction.S);
+            add(Direction.W);
+        }};
+        Explosion explosion = new Explosion(game, getPosition(), directions, explosionRange, now, level);
+        game.getPlayer().addExplosion(explosion);
     }
 
     public boolean getImageNumberHasChange() {
@@ -55,13 +70,19 @@ public class Bomb extends GameObject {
         return hasExploded;
     }
 
+    public void levelHasChanged() { imageNumberHasChange = true; }
+
+    public int getLevel() { return level; }
+
     private int calculateCurrentImageNumber() {
         int timeLeft = (int)Math.ceil(timer.getTimeLeft() * Math.pow(10, -9));
-        if(timeLeft <= timerDuration / 4) {
+        if(timeLeft <= 0) {
+            return 0;
+        } else if(timeLeft <= TIMER_DURATION / 4) {
             return 1;
-        } else if(timeLeft <= (timerDuration / 4) * 2) {
+        } else if(timeLeft <= (TIMER_DURATION / 4) * 2) {
             return 2;
-        } else if(timeLeft <= (timerDuration / 4) * 3) {
+        } else if(timeLeft <= (TIMER_DURATION / 4) * 3) {
             return 3;
         } else {
             return 4;

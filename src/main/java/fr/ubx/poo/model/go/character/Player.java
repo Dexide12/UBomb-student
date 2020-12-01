@@ -8,6 +8,7 @@ import fr.ubx.poo.game.Direction;
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.model.Movable;
 import fr.ubx.poo.model.go.Bomb;
+import fr.ubx.poo.model.go.Explosion;
 import fr.ubx.poo.model.go.GameObject;
 import fr.ubx.poo.game.Game;
 import fr.ubx.poo.model.decor.*;
@@ -22,12 +23,14 @@ public class Player extends GameObject implements Movable {
     private Direction direction;
     private boolean moveRequested = false;
     private boolean hasMove = false;
+    private boolean hasCreateBomb = false;
     private int lives = 1;
     private int keys;
     private int bombsRange;
     private int bombCapacity;
     private int deployedBomb = 0;
     private List<Bomb> deployedBombs = new ArrayList<>();
+    private List<Explosion> myExplosions = new ArrayList<>();
     private boolean winner;
 
     public Player(Game game, Position position) {
@@ -103,6 +106,10 @@ public class Player extends GameObject implements Movable {
         lives = Math.max(lives - amount, 0);
     }
 
+    public void addExplosion(Explosion explosion) {
+        myExplosions.add(explosion);
+    }
+
     public void update(long now) {
         if (moveRequested) {
             if (canMove(direction)) {
@@ -115,18 +122,48 @@ public class Player extends GameObject implements Movable {
         if(lives == 0) {
             alive = false;
         }
+        updateDeployedBombs(now);
+        updateMyExplosions(now);
+    }
 
+    private void updateDeployedBombs(long now) {
         if(deployedBomb > deployedBombs.size()) {
-            deployedBombs.add(new Bomb(game, getPosition(), now));
+            hasCreateBomb = true;
+            deployedBombs.add(new Bomb(game, getPosition(), now, bombsRange, game.getCurrentLevel()));
         }
+        List<Bomb> tmpBomb = new ArrayList<>();
         for(Bomb bomb : deployedBombs) {
             bomb.update(now);
+            if(!bomb.getHasExploded()) {
+                tmpBomb.add(bomb);
+            }
         }
+        deployedBomb +=  tmpBomb.size() - deployedBombs.size();
+        deployedBombs = tmpBomb;
+    }
+
+    private void updateMyExplosions(long now) {
+        List<Explosion> tmp = new ArrayList<>();
+        for(Explosion explosion : myExplosions) {
+            tmp.add(explosion);
+        }
+        for(Explosion explosion : tmp) {
+            explosion.update(now);
+            if(explosion.explosionEnded()) {
+                myExplosions.remove(explosion);
+            }
+        }
+    }
+
+    public Bomb getLastBomb() {
+        return deployedBombs.get(deployedBombs.size() - 1);
     }
 
     public void resetHasMove() {
         hasMove = false;
     }
+
+    public void resetHasCreateBomb() { hasCreateBomb = false; }
 
     public boolean isWinner() {
         return winner;
@@ -138,6 +175,8 @@ public class Player extends GameObject implements Movable {
 
     public boolean getHasMove() { return hasMove; }
 
+    public boolean getHasCreateBomb() { return hasCreateBomb; }
+
     public int getKeys() { return keys; }
 
     public int getBombsRange() { return bombsRange; }
@@ -146,5 +185,9 @@ public class Player extends GameObject implements Movable {
 
     public Iterator<Bomb> getDeployedBombs() {
         return deployedBombs.iterator();
+    }
+
+    public Iterator<Explosion> getPlayerExplosions() {
+        return myExplosions.iterator();
     }
 }

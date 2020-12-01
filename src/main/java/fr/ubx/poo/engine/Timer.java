@@ -5,7 +5,7 @@ public class Timer {
     private double timeLeft;
     private boolean isRunning;
 
-    public Timer(long creationTime, long duration) {
+    public Timer(long creationTime, float duration) {
         timeLeft = duration * Math.pow(10, 9);
         this.lastTime = creationTime;
         isRunning = true;

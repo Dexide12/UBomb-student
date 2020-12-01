@@ -14,9 +14,19 @@ public class SpriteBomb extends SpriteGameObject {
     @Override
     public void updateImage() {
         Bomb bomb = (Bomb) go;
-        if(bomb.getImageNumberHasChange() && !bomb.getHasExploded()) {
+        if(bomb.getImageNumberHasChange()) {
             setImage(ImageFactory.getInstance().getBombImage(bomb.getCurrentImageNumber()));
             bomb.resetImageNumberHasChange();
         }
     }
+
+    public boolean canBeRemoved() {
+        return ((Bomb)go).getHasExploded();
+    }
+
+    public void levelHasChanged() {
+        ((Bomb)go).levelHasChanged();
+    }
+
+    public int getLevel() { return ((Bomb)go).getLevel(); }
 }

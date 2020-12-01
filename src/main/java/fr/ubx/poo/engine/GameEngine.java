@@ -10,7 +10,11 @@ import fr.ubx.poo.game.PositionNotFoundException;
 import fr.ubx.poo.model.decor.Decor;
 import fr.ubx.poo.model.decor.Door;
 import fr.ubx.poo.model.go.Bomb;
+import fr.ubx.poo.model.go.Explosion;
+import fr.ubx.poo.view.image.ImageFactory;
 import fr.ubx.poo.view.sprite.Sprite;
+import fr.ubx.poo.view.sprite.SpriteBomb;
+import fr.ubx.poo.view.sprite.SpriteExplosion;
 import fr.ubx.poo.view.sprite.SpriteFactory;
 import fr.ubx.poo.game.Game;
 import fr.ubx.poo.model.go.character.Player;
@@ -44,6 +48,7 @@ public final class GameEngine {
     private Stage stage;
     private Sprite spritePlayer;
     private List<Sprite> bombsSprites = new ArrayList<>();
+    private List<Sprite> explosionsSprites = new ArrayList<>();
 
     public GameEngine(final String windowTitle, Game game, final Stage stage) {
         this.windowTitle = windowTitle;
@@ -75,6 +80,13 @@ public final class GameEngine {
         statusBar = new StatusBar(root, sceneWidth, sceneHeight, game);
         // Create decor sprites
         sprites.clear();
+        for(Sprite s : bombsSprites) {
+            ((SpriteBomb)s).levelHasChanged();
+        }
+        bombsSprites.clear();
+        explosionsSprites.clear();
+        createMissingBombSprites();
+        createMissingExplosionSprites();
         game.getCurrentWorld().forEach( (pos, d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
         spritePlayer = SpriteFactory.createPlayer(layer, player);
     }
@@ -145,6 +157,13 @@ public final class GameEngine {
 
 
     private void update(long now) {
+        updatePlayer(now);
+        updateLevel();
+        updateBombsSprites();
+        updateExplosionsSprites();
+    }
+
+    private void updatePlayer(long now) {
         player.update(now);
 
         if (!player.isAlive()) {
@@ -155,7 +174,9 @@ public final class GameEngine {
             gameLoop.stop();
             showMessage("Gagné", Color.BLUE);
         }
+    }
 
+    private void updateLevel() {
         if(player.getHasMove()) {
             Decor d = game.getCurrentWorld().get(player.getPosition());
             if(d instanceof Door) {
@@ -172,20 +193,72 @@ public final class GameEngine {
             }
         }
         player.resetHasMove();
+    }
 
+    private void updateBombsSprites() {
+        //Create the sprite of the bomb created by the player this turn
+        if(player.getHasCreateBomb()) {
+            bombsSprites.add(SpriteFactory.createBomb(layer, player.getLastBomb()));
+            player.resetHasCreateBomb();
+        }
+        //Delete Useless Bomb Sprite
+        List<Sprite> bombSpritesTmp = new ArrayList<>();
+        for(Sprite bombSprite : bombsSprites) {
+            if(!((SpriteBomb)bombSprite).canBeRemoved()) {
+                bombSpritesTmp.add(bombSprite);
+            } else {
+                bombSprite.remove();
+            }
+        }
+        bombsSprites = bombSpritesTmp;
+    }
+
+    private void createMissingBombSprites() {
         for (Iterator<Bomb> it = player.getDeployedBombs(); it.hasNext(); ) {
             Bomb bomb = it.next();
-            boolean notFound = true;
+            boolean found = false;
             for(Sprite bombSprite : bombsSprites) {
                 if (bombSprite.getPosition().equals(bomb.getPosition())) {
-                    notFound = false;
+                    if(((SpriteBomb)bombSprite).getLevel() == game.getCurrentLevel()) {
+                        found = true;
+                    }
                 }
             }
-            if(notFound) {
+            if(!found && bomb.getLevel() == game.getCurrentLevel()) {
                 bombsSprites.add(SpriteFactory.createBomb(layer, bomb));
             }
         }
+    }
 
+    private void createMissingExplosionSprites() {
+        for(Iterator<Explosion> it = player.getPlayerExplosions(); it.hasNext();) {
+            Explosion explosion = it.next();
+            boolean found = false;
+            for(Sprite explosionSprite : explosionsSprites) {
+                if (explosionSprite.getPosition().equals(explosion.getPosition())) {
+                    if(((SpriteExplosion)explosionSprite).getLevel() == game.getCurrentLevel()) {
+                        found = true;
+                    }
+                }
+            }
+            if(!found && explosion.getLevel() == game.getCurrentLevel()) {
+                explosionsSprites.add(SpriteFactory.createExplosion(layer, explosion));
+            }
+        }
+    }
+
+    private void updateExplosionsSprites() {
+        createMissingExplosionSprites();
+        //Delete Useless Explosion Sprite
+        List<Sprite> explosionSpritesTmp = new ArrayList<>();
+        for(Sprite explosion : explosionsSprites) {
+            if(!((SpriteExplosion)explosion).hasEnded()) {
+                explosionSpritesTmp.add(explosion);
+            } else {
+                explosion.remove();
+            }
+        }
+        explosionsSprites = explosionSpritesTmp;
     }
 
     private void createAndDisplayScene(boolean next) {
@@ -201,6 +274,7 @@ public final class GameEngine {
     private void render() {
         sprites.forEach(Sprite::render);
         bombsSprites.forEach(Sprite::render);
+        explosionsSprites.forEach(Sprite::render);
         // last rendering to have player in the foreground
         spritePlayer.render();
     }
