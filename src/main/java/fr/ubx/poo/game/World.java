@@ -7,6 +7,7 @@ package fr.ubx.poo.game;
 import fr.ubx.poo.model.decor.Decor;
 import fr.ubx.poo.model.decor.Door;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -19,7 +20,7 @@ public class World {
     public World(WorldEntity[][] raw) {
         this.raw = raw;
         dimension = new Dimension(raw.length, raw[0].length);
-        grid = WorldBuilder.build(raw, dimension);
+        grid = WorldBuilder.build(raw, dimension,this);
     }
 
     public Position findPlayer() throws PositionNotFoundException {
@@ -73,5 +74,14 @@ public class World {
 
     public boolean isEmpty(Position position) {
         return grid.get(position) == null;
+    }
+
+    @Override
+    public String toString() {
+        return "World{" +
+                "grid=" + grid +
+                ", raw=" + Arrays.toString(raw) +
+                ", dimension=" + dimension +
+                '}';
     }
 }
