@@ -26,6 +26,10 @@ public final class ImageFactory {
             BOMB_1, BOMB_2, BOMB_3, BOMB_4
     };
 
+    private final ImageResource[] monsterDirections = new ImageResource[]{
+            MONSTER_UP, MONSTER_RIGHT, MONSTER_DOWN, MONSTER_LEFT,
+    };
+
     private ImageFactory() {
         images = new Image[ImageResource.values().length];
     }

@@ -14,6 +14,7 @@ import fr.ubx.poo.model.decor.Box;
 import fr.ubx.poo.model.decor.Door;
 import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.Explosion;
+import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.model.go.character.Player;
 import fr.ubx.poo.view.image.ImageFactory;
 import javafx.scene.layout.Pane;
@@ -50,4 +51,6 @@ public final class SpriteFactory {
     public static Sprite createExplosion(Pane layer, Explosion explosion) {
         return new SpriteExplosion(layer, explosion);
     }
+
+    public static Sprite createMonster(Pane layer, Monster monster){ return new SpriteMonster(layer,monster);}
 }
