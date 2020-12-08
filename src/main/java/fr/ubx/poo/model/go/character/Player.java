@@ -38,7 +38,7 @@ public class Player extends GameObject implements Movable {
         this.direction = Direction.S;
         this.lives = game.getInitPlayerLives();
         this.keys = 1;
-        this.bombsRange = 1;
+        this.bombsRange = 3;
         this.bombCapacity = 1;
     }
 
