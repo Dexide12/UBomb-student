@@ -91,22 +91,13 @@ public class Player extends GameObject implements Movable {
             return false;
         }
         Decor decor = game.getCurrentWorld().get(nextPos);
-        System.out.println("Il y a un(e) "+decor);
-        if (decor instanceof Stone
-            || decor instanceof Tree){
-            return false;
-        }else if (decor instanceof Box){
-            if (((Box) decor).canMove(direction)){
-                System.out.println("Cette boite peut bouger");
-                ((Box) decor).doMove(direction);
-                return true;
-            }else{
-                System.out.println("Cette boite ne peut pas bouger");
-                return false;
-            }
-        }else {
+        if (decor == null){
             return true;
         }
+        if(!decor.canGoOnMe(direction)){
+            return false;
+        }
+        return true;
     }
 
     public void doMove(Direction direction) {

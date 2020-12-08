@@ -2,6 +2,8 @@
 
 package fr.ubx.poo.model.decor;
 
+import fr.ubx.poo.game.Direction;
+
 public class Door extends Decor {
     private boolean isOpen;
     private boolean leadToNext;
@@ -20,6 +22,11 @@ public class Door extends Decor {
     public boolean getIsOpen() { return isOpen; }
 
     public boolean getLeadToNext() { return leadToNext; }
+
+    @Override
+    public boolean canGoOnMe(Direction direction) {
+        return isOpen;
+    }
 
     public boolean open() {
         if(!isOpen) {

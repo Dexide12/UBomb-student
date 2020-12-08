@@ -20,18 +20,25 @@ public class Box extends Decor implements Movable {
         if (!world.isInside(nextPos)){
             return false;
         }
-        if (world.get(nextPos) instanceof Decor){
-            return false;
-        }
-        return true;
+        if (world.get(nextPos) == null)
+            return true;
+        return false;
     }
 
     @Override
     public void doMove(Direction direction) {
         Position nextPos = direction.nextPosition(getPosition());
+        world.clear(getPosition());
         setPosition(nextPos);
-        world.clear(position);
         world.set(nextPos,this);
+    }
+
+    @Override
+    public boolean canGoOnMe(Direction direction) {
+        boolean can = canMove(direction);
+        if (can)
+            doMove(direction);
+        return can;
     }
 
     public Position getPosition() {
