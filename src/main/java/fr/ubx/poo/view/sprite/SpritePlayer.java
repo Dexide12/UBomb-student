@@ -11,6 +11,7 @@ import javafx.scene.layout.Pane;
 
 public class SpritePlayer extends SpriteGameObject {
     private final ColorAdjust effect = new ColorAdjust();
+    private boolean display = false;
 
     public SpritePlayer(Pane layer, Player player) {
         super(layer, null, player);
@@ -21,5 +22,13 @@ public class SpritePlayer extends SpriteGameObject {
     public void updateImage() {
         Player player = (Player) go;
         setImage(ImageFactory.getInstance().getPlayer(player.getDirection()));
+    }
+
+    public boolean getDisplay() {
+        return display;
+    }
+
+    public void changeDisplay() {
+        display = !display;
     }
 }

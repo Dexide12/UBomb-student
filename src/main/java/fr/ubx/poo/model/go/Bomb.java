@@ -32,7 +32,6 @@ public class Bomb extends GameObject {
             timer.update(now);
             if (!timer.getIsRunning()) {
                 explode(now);
-                hasExploded = true;
             } else {
                 int tmp = calculateCurrentImageNumber();
                 if (tmp != currentImageNumber) {
@@ -43,7 +42,9 @@ public class Bomb extends GameObject {
         }
     }
 
-    private void explode(long now) {
+    public void explode(long now) {
+        hasExploded = true;
+        timer.stop();
         List<Direction> directions = new ArrayList<>() {{
             add(Direction.N);
             add(Direction.E);

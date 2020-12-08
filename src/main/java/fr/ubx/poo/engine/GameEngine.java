@@ -12,10 +12,7 @@ import fr.ubx.poo.model.decor.Door;
 import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.Explosion;
 import fr.ubx.poo.view.image.ImageFactory;
-import fr.ubx.poo.view.sprite.Sprite;
-import fr.ubx.poo.view.sprite.SpriteBomb;
-import fr.ubx.poo.view.sprite.SpriteExplosion;
-import fr.ubx.poo.view.sprite.SpriteFactory;
+import fr.ubx.poo.view.sprite.*;
 import fr.ubx.poo.game.Game;
 import fr.ubx.poo.model.go.character.Player;
 import javafx.animation.AnimationTimer;
@@ -33,6 +30,7 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 
 public final class GameEngine {
@@ -79,6 +77,7 @@ public final class GameEngine {
         root.getChildren().add(layer);
         statusBar = new StatusBar(root, sceneWidth, sceneHeight, game);
         // Create decor sprites
+        sprites.forEach((s) -> s.remove());
         sprites.clear();
         for(Sprite s : bombsSprites) {
             ((SpriteBomb)s).levelHasChanged();
@@ -167,8 +166,12 @@ public final class GameEngine {
     private void updateBox(){
         sprites.forEach((s) -> s.remove());
         sprites.clear();
-        game.getCurrentWorld().forEach( (pos, d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
-
+        BiConsumer<Position, Decor> action = (pos, d) -> {
+          if(d.getResistance() > 0) {
+              sprites.add(SpriteFactory.createDecor(layer, pos, d));
+          }
+        };
+        game.getCurrentWorld().forEach(action);
     }
 
     private void updatePlayer(long now) {
@@ -284,7 +287,16 @@ public final class GameEngine {
         bombsSprites.forEach(Sprite::render);
         explosionsSprites.forEach(Sprite::render);
         // last rendering to have player in the foreground
-        spritePlayer.render();
+        if(player.isInvincible()) {
+            if(!((SpritePlayer)spritePlayer).getDisplay()) {
+                spritePlayer.remove();
+            } else {
+                spritePlayer.render();
+            }
+            ((SpritePlayer)spritePlayer).changeDisplay();
+        } else {
+            spritePlayer.render();
+        }
     }
 
     private void updateSprite(Position spritePosition) {

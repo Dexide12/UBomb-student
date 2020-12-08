@@ -9,4 +9,7 @@ public class Stone extends Decor {
     public String toString() {
         return "Stone";
     }
+
+    @Override
+    public void takeDamage(int value) {}
 }

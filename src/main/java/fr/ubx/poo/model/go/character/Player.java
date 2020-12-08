@@ -4,6 +4,7 @@
 
 package fr.ubx.poo.model.go.character;
 
+import fr.ubx.poo.engine.Timer;
 import fr.ubx.poo.game.Direction;
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.model.Movable;
@@ -19,6 +20,7 @@ import java.util.List;
 
 public class Player extends GameObject implements Movable {
 
+    private final float INVINCIBILITY_DURATION = 2f;
     private boolean alive = true;
     private Direction direction;
     private boolean moveRequested = false;
@@ -29,6 +31,7 @@ public class Player extends GameObject implements Movable {
     private int bombsRange;
     private int bombCapacity;
     private int deployedBomb = 0;
+    private Timer invincibilityTimer = new Timer(0, 0);
     private List<Bomb> deployedBombs = new ArrayList<>();
     private List<Explosion> myExplosions = new ArrayList<>();
     private boolean winner;
@@ -39,7 +42,7 @@ public class Player extends GameObject implements Movable {
         this.lives = game.getInitPlayerLives();
         this.keys = 1;
         this.bombsRange = 3;
-        this.bombCapacity = 1;
+        this.bombCapacity = 3;
     }
 
     public int getLives() {
@@ -105,8 +108,12 @@ public class Player extends GameObject implements Movable {
         setPosition(nextPos);
     }
 
-    public void takeDamage(int amount) {
-        lives = Math.max(lives - amount, 0);
+    public void takeDamage(int amount, long now) {
+        if(invincibilityTimer.getTimeLeft() == 0) {
+            lives = Math.max(lives - amount, 0);
+            invincibilityTimer = new Timer(now, INVINCIBILITY_DURATION);
+            invincibilityTimer.start();
+        }
     }
 
     public void addExplosion(Explosion explosion) {
@@ -125,6 +132,7 @@ public class Player extends GameObject implements Movable {
         if(lives == 0) {
             alive = false;
         }
+        invincibilityTimer.update(now);
         updateDeployedBombs(now);
         updateMyExplosions(now);
     }
@@ -156,6 +164,15 @@ public class Player extends GameObject implements Movable {
                 myExplosions.remove(explosion);
             }
         }
+    }
+
+    public Bomb getBomb(Position position) {
+        for (Bomb b : deployedBombs) {
+            if(b.getPosition().equals(position)) {
+                return b;
+            }
+        }
+        return null;
     }
 
     public Bomb getLastBomb() {
@@ -193,4 +210,6 @@ public class Player extends GameObject implements Movable {
     public Iterator<Explosion> getPlayerExplosions() {
         return myExplosions.iterator();
     }
+
+    public boolean isInvincible() { return invincibilityTimer.getTimeLeft() > 0; }
 }

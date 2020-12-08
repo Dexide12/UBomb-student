@@ -35,4 +35,7 @@ public class Door extends Decor {
         }
         return false;
     }
+
+    @Override
+    public void takeDamage(int value) {}
 }

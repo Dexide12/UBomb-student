@@ -12,11 +12,14 @@ import java.util.List;
 
 public class Explosion extends GameObject {
 
-    private static final float EXPLOSION_DURATION = 0.4f;
+    private static final float EXPLOSION_DURATION = 0.20f;
+    private static final float AFTER_DURATION = 0.15f;
     private List<Direction> spreadingDirections;
-    private final Timer timer;
+    private Timer timer;
     private int explosionRange;
     private int level;
+    private boolean hasDamageDecor = false;
+    private boolean hasSpread = false;
 
     public Explosion(Game game, Position position, List<Direction> spreadingDirections, int explosionRange, long now, int level) {
         super(game, position);
@@ -30,7 +33,7 @@ public class Explosion extends GameObject {
     public void update(long now) {
         if(timer.getIsRunning()) {
             timer.update(now);
-            if(!timer.getIsRunning()) {
+            if(!timer.getIsRunning() && !hasSpread) {
                 if(explosionRange > 0) {
                     for(Direction direction : spreadingDirections) {
                         Position nextPos = direction.nextPosition(getPosition());
@@ -49,16 +52,27 @@ public class Explosion extends GameObject {
                         }
                     }
                 }
+                hasSpread = true;
+                timer = new Timer(now, AFTER_DURATION);
+                timer.start();
             } else {
-
-                if(game.getCurrentWorld().isEmpty(getPosition())) {
-                    Decor decor = game.getCurrentWorld().get(getPosition());
-                    spreadingDirections.clear();
+                Bomb b;
+                if(!game.getCurrentWorld().isEmpty(getPosition())) {
+                    if(!hasDamageDecor) {
+                        hasDamageDecor = true;
+                        Decor decor = game.getCurrentWorld().get(getPosition());
+                        decor.takeDamage(1);
+                        if(decor.getResistance() == 0) {
+                            hasDamageDecor = false;
+                        }
+                        spreadingDirections.clear();
+                    }
                 }
                 else if(game.getPlayer().getPosition().equals(getPosition())) {
-                    game.getPlayer().takeDamage(1);
-                } else if(true) {
-                    //Todo check for bomb to detonate -> ask player if bomb on case
+                    game.getPlayer().takeDamage(1, now);
+                } else if((b = game.getPlayer().getBomb(getPosition())) != null) {
+                    spreadingDirections.clear();
+                    b.explode(now);
                 }
                 //Todo check for monsters when added to game
             }
