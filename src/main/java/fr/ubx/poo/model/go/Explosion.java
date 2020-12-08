@@ -50,9 +50,9 @@ public class Explosion extends GameObject {
                     }
                 }
             } else {
-                Decor decor = game.getCurrentWorld().get(getPosition());
-                if(decor != null) {
-                    //Damage to decor
+
+                if(game.getCurrentWorld().isEmpty(getPosition())) {
+                    Decor decor = game.getCurrentWorld().get(getPosition());
                     spreadingDirections.clear();
                 }
                 else if(game.getPlayer().getPosition().equals(getPosition())) {
