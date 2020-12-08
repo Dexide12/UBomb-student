@@ -159,8 +159,16 @@ public final class GameEngine {
     private void update(long now) {
         updatePlayer(now);
         updateLevel();
+        updateBox();
         updateBombsSprites();
         updateExplosionsSprites();
+    }
+
+    private void updateBox(){
+        sprites.forEach((s) -> s.remove());
+        sprites.clear();
+        game.getCurrentWorld().forEach( (pos, d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
+
     }
 
     private void updatePlayer(long now) {
