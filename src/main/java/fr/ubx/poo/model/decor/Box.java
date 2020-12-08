@@ -1,59 +1,38 @@
 package fr.ubx.poo.model.decor;
 
-import fr.ubx.poo.game.Direction;
-import fr.ubx.poo.game.Position;
+import fr.ubx.poo.game.*;
 import fr.ubx.poo.model.Movable;
 import fr.ubx.poo.model.go.GameObject;
-import fr.ubx.poo.game.Game;
 import fr.ubx.poo.model.decor.*;
 
-public class Box extends Decor {
-
-    /*protected final Game game;
+public class Box extends Decor implements Movable {
     private Position position;
-    private final boolean alive = true;
-    Direction direction;
-    private boolean moveRequested = false;
+    private World world;
 
-    public Box() {
-    }
-
-    public void requestMove(Direction direction) {
-        if (direction != this.direction) {
-            this.direction = direction;
-        }
-        moveRequested = true;
+    public Box(Position position, World world) {
+        this.position = position;
+        this.world = world;
     }
 
     @Override
     public boolean canMove(Direction direction) {
         Position nextPos = direction.nextPosition(getPosition());
-        if (!game.getWorld().isInside(nextPos)){
+        if (!world.isInside(nextPos)){
             return false;
         }
-        if (game.getWorld().get(nextPos) instanceof Stone
-                || game.getWorld().get(nextPos) instanceof Tree){
+        if (world.get(nextPos) instanceof Decor){
             return false;
         }
         return true;
     }
 
+    @Override
     public void doMove(Direction direction) {
         Position nextPos = direction.nextPosition(getPosition());
         setPosition(nextPos);
+        world.clear(position);
+        world.set(nextPos,this);
     }
-
-    public void update(long now) {
-        if (moveRequested) {
-            if (canMove(direction)) {
-                doMove(direction);
-            }
-        }
-        moveRequested = false;
-    }
-
-
-
 
     public Position getPosition() {
         return position;
@@ -61,7 +40,8 @@ public class Box extends Decor {
 
     public void setPosition(Position position) {
         this.position = position;
-    }*/
+    }
+
     @Override
     public String toString() {
         return "Box";
