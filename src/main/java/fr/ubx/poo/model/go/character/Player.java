@@ -6,10 +6,8 @@ package fr.ubx.poo.model.go.character;
 
 import fr.ubx.poo.game.Direction;
 import fr.ubx.poo.game.Position;
-import fr.ubx.poo.model.Movable;
 import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.Explosion;
-import fr.ubx.poo.model.go.GameObject;
 import fr.ubx.poo.game.Game;
 import fr.ubx.poo.model.decor.*;
 
@@ -17,14 +15,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Player extends GameObject implements Movable {
+public class Player extends Character {
 
-    private boolean alive = true;
-    private Direction direction;
-    private boolean moveRequested = false;
-    private boolean hasMove = false;
     private boolean hasCreateBomb = false;
-    private int lives = 1;
     private int keys;
     private int bombsRange;
     private int bombCapacity;
@@ -42,22 +35,7 @@ public class Player extends GameObject implements Movable {
         this.bombCapacity = 1;
     }
 
-    public int getLives() {
-        return lives;
-    }
 
-    public Direction getDirection() {
-        return direction;
-    }
-
-    public void setDirection(Direction direction) { this.direction = direction; }
-
-    public void requestMove(Direction direction) {
-        if (direction != this.direction) {
-            this.direction = direction;
-        }
-        moveRequested = true;
-    }
 
     public boolean requestOpenDoor() {
         if(keys > 0) {
@@ -84,30 +62,7 @@ public class Player extends GameObject implements Movable {
         }
     }
 
-    @Override
-    public boolean canMove(Direction direction) {
-        Position nextPos = direction.nextPosition(getPosition());
-        if (!game.getCurrentWorld().isInside(nextPos)){
-            return false;
-        }
-        Decor decor = game.getCurrentWorld().get(nextPos);
-        if (decor == null){
-            return true;
-        }
-        if(!decor.canGoOnMe(direction)){
-            return false;
-        }
-        return true;
-    }
 
-    public void doMove(Direction direction) {
-        Position nextPos = direction.nextPosition(getPosition());
-        setPosition(nextPos);
-    }
-
-    public void takeDamage(int amount) {
-        lives = Math.max(lives - amount, 0);
-    }
 
     public void addExplosion(Explosion explosion) {
         myExplosions.add(explosion);
@@ -162,21 +117,11 @@ public class Player extends GameObject implements Movable {
         return deployedBombs.get(deployedBombs.size() - 1);
     }
 
-    public void resetHasMove() {
-        hasMove = false;
-    }
-
     public void resetHasCreateBomb() { hasCreateBomb = false; }
 
     public boolean isWinner() {
         return winner;
     }
-
-    public boolean isAlive() {
-        return alive;
-    }
-
-    public boolean getHasMove() { return hasMove; }
 
     public boolean getHasCreateBomb() { return hasCreateBomb; }
 
