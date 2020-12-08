@@ -54,4 +54,7 @@ public class Box extends Decor implements Movable {
         return "Box";
     }
 
+    @Override
+    public boolean canExplode() { return true; }
+
 }

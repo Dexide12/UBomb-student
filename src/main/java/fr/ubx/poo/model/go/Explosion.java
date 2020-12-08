@@ -34,12 +34,19 @@ public class Explosion extends GameObject {
                 if(explosionRange > 0) {
                     for(Direction direction : spreadingDirections) {
                         Position nextPos = direction.nextPosition(getPosition());
-                        Decor d = game.getCurrentWorld().get(getPosition());
-                        //Todo if D Instance of nonDestroyable do not spread
-                        List<Direction> directions = new ArrayList<>();
-                        directions.add(direction);
-                        Explosion explosion = new Explosion(game, nextPos, directions, explosionRange - 1, now, level);
-                        game.getPlayer().addExplosion(explosion);
+                        boolean canSpread = true;
+                        if(!game.getCurrentWorld().isEmpty(nextPos)) {
+                            Decor d = game.getCurrentWorld().get(nextPos);
+                            if(!d.canExplode()) {
+                                canSpread = false;
+                            }
+                        }
+                        if(canSpread) {
+                            List<Direction> directions = new ArrayList<>();
+                            directions.add(direction);
+                            Explosion explosion = new Explosion(game, nextPos, directions, explosionRange - 1, now, level);
+                            game.getPlayer().addExplosion(explosion);
+                        }
                     }
                 }
             } else {

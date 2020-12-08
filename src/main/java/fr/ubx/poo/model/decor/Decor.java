@@ -15,5 +15,6 @@ public class Decor extends Entity {
     public boolean canGoOnMe(Direction direction){
         return false;
     }
+    public boolean canExplode() { return false; }
 
 }
