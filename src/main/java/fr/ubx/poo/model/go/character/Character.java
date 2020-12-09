@@ -59,7 +59,7 @@ public class Character extends GameObject implements Movable {
         setPosition(nextPos);
     }
 
-    public void takeDamage(int amount) {
+    public void takeDamage(int amount, long now) {
         lives = Math.max(lives - amount, 0);
     }
 

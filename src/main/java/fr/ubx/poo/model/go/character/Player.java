@@ -65,6 +65,7 @@ public class Player extends Character {
         }
     }
 
+    @Override
     public void takeDamage(int amount, long now) {
         if(invincibilityTimer.getTimeLeft() == 0) {
             lives = Math.max(lives - amount, 0);

@@ -39,6 +39,10 @@ public class WorldBuilder {
                 return new Door(true, true);
             case DoorPrevOpened:
                 return new Door(true, false);
+            case DamagedRockPile:
+                return new RockPile(1);
+            case RockPile:
+                return new RockPile(2);
             default:
                 return null;
         }

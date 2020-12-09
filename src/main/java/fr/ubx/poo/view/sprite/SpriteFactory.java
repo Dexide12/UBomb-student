@@ -7,11 +7,7 @@ package fr.ubx.poo.view.sprite;
 import static fr.ubx.poo.view.image.ImageResource.*;
 
 import fr.ubx.poo.game.Position;
-import fr.ubx.poo.model.decor.Decor;
-import fr.ubx.poo.model.decor.Stone;
-import fr.ubx.poo.model.decor.Tree;
-import fr.ubx.poo.model.decor.Box;
-import fr.ubx.poo.model.decor.Door;
+import fr.ubx.poo.model.decor.*;
 import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.Explosion;
 import fr.ubx.poo.model.go.character.Monster;
@@ -36,6 +32,13 @@ public final class SpriteFactory {
                 return new SpriteDecor(layer, factory.get(DOOR_OPENED), position);
             else
                 return new SpriteDecor(layer, factory.get(DOOR_CLOSED), position);
+        }
+        if(decor instanceof RockPile) {
+            if(decor.getResistance() == 2) {
+                return new SpriteDecor(layer, factory.get(ROCK_PILE_2), position);
+            } else if(decor.getResistance() == 1) {
+                return new SpriteDecor(layer, factory.get(ROCK_PILE_1), position);
+            }
         }
         return null;
     }

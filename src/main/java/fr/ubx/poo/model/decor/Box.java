@@ -35,6 +35,9 @@ public class Box extends Decor implements Movable {
 
     @Override
     public boolean canGoOnMe(Direction direction) {
+        if(resistance == 0) {
+            return true;
+        }
         boolean can = canMove(direction);
         if (can)
             doMove(direction);

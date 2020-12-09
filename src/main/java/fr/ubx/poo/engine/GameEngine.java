@@ -158,12 +158,12 @@ public final class GameEngine {
     private void update(long now) {
         updatePlayer(now);
         updateLevel();
-        updateBox();
+        updateDecorSprites();
         updateBombsSprites();
         updateExplosionsSprites();
     }
 
-    private void updateBox(){
+    private void updateDecorSprites(){
         sprites.forEach((s) -> s.remove());
         sprites.clear();
         BiConsumer<Position, Decor> action = (pos, d) -> {
