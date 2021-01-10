@@ -55,6 +55,7 @@ public class Character extends GameObject implements Movable {
 
     @Override
     public void doMove(Direction direction) {
+
         Position nextPos = direction.nextPosition(getPosition());
         setPosition(nextPos);
     }

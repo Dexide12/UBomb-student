@@ -19,4 +19,5 @@ public class Decor extends Entity {
     public boolean canExplode() { return false; }
     public int getResistance() { return  resistance; }
     public void takeDamage(int value) { resistance = (resistance < value)? 0: resistance - value; }
+    public boolean makeDamage(){return false;}
 }

@@ -34,8 +34,30 @@ public class Player extends Character {
         this.direction = Direction.S;
         this.lives = game.getInitPlayerLives();
         this.keys = 1;
-        this.bombsRange = 3;
-        this.bombCapacity = 3;
+        this.bombsRange = 1;
+        this.bombCapacity = 1;
+    }
+
+    public void addBombRange(int value){
+        bombsRange += value;
+        if(bombsRange < 1){
+            bombsRange = 1;
+        }
+    }
+
+    public void addBombCapacity(int value){
+        bombCapacity += value;
+        if(bombCapacity < 1){
+            bombCapacity = 1;
+        }
+    }
+
+    public void addKey(){
+        keys += 1;
+    }
+
+    public void win(){
+        winner = true;
     }
 
 
@@ -86,7 +108,12 @@ public class Player extends Character {
             }
         }
         moveRequested = false;
-
+        Decor d = game.getCurrentWorld().get(getPosition());
+        if (d != null){
+            if (d.makeDamage()){
+                takeDamage(1,now);
+            }
+        }
         if(lives == 0) {
             alive = false;
         }

@@ -7,9 +7,7 @@ package fr.ubx.poo.game;
 import fr.ubx.poo.model.decor.Decor;
 import fr.ubx.poo.model.decor.Door;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 public class World {

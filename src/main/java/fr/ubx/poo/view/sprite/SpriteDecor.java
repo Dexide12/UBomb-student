@@ -22,4 +22,6 @@ public class SpriteDecor extends Sprite {
     public Position getPosition() {
         return position;
     }
+
+    protected void setPosition(Position pos){this.position = pos;}
 }

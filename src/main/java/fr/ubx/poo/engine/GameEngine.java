@@ -9,9 +9,10 @@ import fr.ubx.poo.game.Position;
 import fr.ubx.poo.game.PositionNotFoundException;
 import fr.ubx.poo.model.decor.Decor;
 import fr.ubx.poo.model.decor.Door;
+import fr.ubx.poo.model.decor.Monster;
+import fr.ubx.poo.model.decor.collectable.*;
 import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.Explosion;
-import fr.ubx.poo.view.image.ImageFactory;
 import fr.ubx.poo.view.sprite.*;
 import fr.ubx.poo.game.Game;
 import fr.ubx.poo.model.go.character.Player;
@@ -45,6 +46,7 @@ public final class GameEngine {
     private Input input;
     private Stage stage;
     private Sprite spritePlayer;
+    private List<Sprite> monstersSprites = new ArrayList<>();
     private List<Sprite> bombsSprites = new ArrayList<>();
     private List<Sprite> explosionsSprites = new ArrayList<>();
 
@@ -84,6 +86,7 @@ public final class GameEngine {
         }
         bombsSprites.clear();
         explosionsSprites.clear();
+        monstersSprites.clear();
         createMissingBombSprites();
         createMissingExplosionSprites();
         game.getCurrentWorld().forEach( (pos, d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
@@ -158,17 +161,20 @@ public final class GameEngine {
     private void update(long now) {
         updatePlayer(now);
         updateLevel();
-        updateDecorSprites();
+        updateDecorSprites(now);
         updateBombsSprites();
         updateExplosionsSprites();
     }
 
-    private void updateDecorSprites(){
+    private void updateDecorSprites(long now){
         sprites.forEach((s) -> s.remove());
         sprites.clear();
         BiConsumer<Position, Decor> action = (pos, d) -> {
           if(d.getResistance() > 0) {
               sprites.add(SpriteFactory.createDecor(layer, pos, d));
+              if(d instanceof Monster) {
+                  ((Monster) d).update(now);
+              }
           }
         };
         game.getCurrentWorld().forEach(action);
@@ -202,6 +208,30 @@ public final class GameEngine {
                     }
                 }
             }
+            if(d instanceof Collectable){
+                if(d instanceof BombRange){
+                    if (!((BombRange) d).collected()){
+                        player.addBombRange(((BombRange) d).getValue());
+                        ((BombRange) d).collect();
+                    }
+                }
+                if(d instanceof BombNumber){
+                    if(!((BombNumber)d).collected()){
+                        player.addBombCapacity(((BombNumber) d).getValue());
+                        ((BombNumber) d).collect();
+                    }
+                }
+                if(d instanceof Key){
+                    if(!((Key) d).collected()){
+                        player.addKey();
+                        ((Key) d).collect();
+                    }
+                }
+                if(d instanceof Princess){
+                    player.win();
+                }
+            }
+
         }
         player.resetHasMove();
     }

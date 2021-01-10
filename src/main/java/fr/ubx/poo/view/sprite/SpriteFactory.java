@@ -8,9 +8,12 @@ import static fr.ubx.poo.view.image.ImageResource.*;
 
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.model.decor.*;
+import fr.ubx.poo.model.decor.collectable.BombNumber;
+import fr.ubx.poo.model.decor.collectable.BombRange;
+import fr.ubx.poo.model.decor.collectable.Key;
+import fr.ubx.poo.model.decor.collectable.Princess;
 import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.Explosion;
-import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.model.go.character.Player;
 import fr.ubx.poo.view.image.ImageFactory;
 import javafx.scene.layout.Pane;
@@ -40,6 +43,30 @@ public final class SpriteFactory {
                 return new SpriteDecor(layer, factory.get(ROCK_PILE_1), position);
             }
         }
+        if(decor instanceof Monster) {
+            Monster monster = (Monster) decor;
+            return new SpriteMonster(layer, factory.get(MONSTER_DOWN), position, monster);
+        }
+        if(decor instanceof Key){
+            return new SpriteDecor(layer, factory.get(KEY), position);
+        }
+        if(decor instanceof BombNumber){
+            if (((BombNumber) decor).getValue() < 0){
+                return new SpriteDecor(layer, factory.get(BOMBNUMBERDEC), position);
+            }else{
+                return new SpriteDecor(layer, factory.get(BOMBNUMBERINC), position);
+            }
+        }
+        if(decor instanceof BombRange){
+            if (((BombRange) decor).getValue() < 0){
+                return new SpriteDecor(layer, factory.get(BOMBRANGEDEC),position );
+            }else{
+                return new SpriteDecor(layer, factory.get(BOMBRANGEINC), position);
+            }
+        }
+        if(decor instanceof Princess){
+            return new SpriteDecor(layer, factory.get(PRINCESS), position);
+        }
         return null;
     }
 
@@ -54,6 +81,4 @@ public final class SpriteFactory {
     public static Sprite createExplosion(Pane layer, Explosion explosion) {
         return new SpriteExplosion(layer, explosion);
     }
-
-    public static Sprite createMonster(Pane layer, Monster monster){ return new SpriteMonster(layer,monster);}
 }
