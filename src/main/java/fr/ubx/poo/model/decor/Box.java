@@ -20,8 +20,13 @@ public class Box extends Decor implements Movable {
         if (!world.isInside(nextPos)){
             return false;
         }
-        if (world.get(nextPos) == null)
+        if (world.get(nextPos) == null) {
             return true;
+        }else{
+            if(world.get(nextPos).resistance == 0){
+                return true;
+            }
+        }
         return false;
     }
 
