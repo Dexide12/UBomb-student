@@ -16,10 +16,6 @@ public class BombRange extends Collectable {
         return value;
     }
 
-    @Override
-    public boolean canGoOnMe(Direction direction) {
-        return true;
-    }
 
     @Override
     public String toString() {

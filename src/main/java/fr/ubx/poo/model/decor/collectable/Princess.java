@@ -10,11 +10,6 @@ public class Princess extends Collectable {
     }
 
     @Override
-    public boolean canGoOnMe(Direction direction) {
-        return true;
-    }
-
-    @Override
     public String toString() {
         return "Princess";
     }

@@ -16,12 +16,6 @@ public class BombNumber extends Collectable {
         return value;
     }
 
-
-    @Override
-    public boolean canGoOnMe(Direction direction) {
-        return true;
-    }
-
     @Override
     public String toString() {
         return "BombNumber"+ (value < 0 ? "Dec" : "inc");

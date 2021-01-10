@@ -10,11 +10,6 @@ public class Key extends Collectable {
     }
 
     @Override
-    public boolean canGoOnMe(Direction direction) {
-        return true;
-    }
-
-    @Override
     public String toString() {
         return "Key";
     }
