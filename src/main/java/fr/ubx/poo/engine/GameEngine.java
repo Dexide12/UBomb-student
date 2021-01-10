@@ -27,8 +27,10 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -161,6 +163,7 @@ public final class GameEngine {
     private void update(long now) {
         updatePlayer(now);
         updateLevel();
+        updateMonster(now);
         updateDecorSprites(now);
         updateBombsSprites();
         updateExplosionsSprites();
@@ -172,9 +175,6 @@ public final class GameEngine {
         BiConsumer<Position, Decor> action = (pos, d) -> {
           if(d.getResistance() > 0) {
               sprites.add(SpriteFactory.createDecor(layer, pos, d));
-              if(d instanceof Monster) {
-                  ((Monster) d).update(now);
-              }
           }
         };
         game.getCurrentWorld().forEach(action);
@@ -190,6 +190,15 @@ public final class GameEngine {
         if (player.isWinner()) {
             gameLoop.stop();
             showMessage("Gagné", Color.BLUE);
+        }
+    }
+
+    private void updateMonster(long now){
+        Collection<Decor> decors = new ArrayList<>(game.getCurrentWorld().values());
+        for(Decor d : decors){
+            if(d instanceof Monster){
+                ((Monster) d).update(now);
+            }
         }
     }
 
