@@ -6,6 +6,7 @@ import fr.ubx.poo.game.Game;
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.model.Entity;
 import fr.ubx.poo.model.decor.Decor;
+import fr.ubx.poo.model.decor.collectable.Collectable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,7 @@ public class Explosion extends GameObject {
                             boolean canSpread = true;
                             if (!game.getCurrentWorld().isEmpty(nextPos)) {
                                 Decor d = game.getCurrentWorld().get(nextPos);
-                                if (!d.canExplode()) {
+                                if (!d.canExplode() && !(d instanceof Collectable)) {
                                     canSpread = false;
                                 }
                             }
@@ -63,11 +64,13 @@ public class Explosion extends GameObject {
                     if(!hasDamageDecor) {
                         hasDamageDecor = true;
                         Decor decor = game.getCurrentWorld().get(getPosition());
+                        if(decor.getResistance() > 0) {
+                            spreadingDirections.clear();
+                        }
                         decor.takeDamage(1);
                         if(decor.getResistance() == 0) {
                             hasDamageDecor = false;
                         }
-                        spreadingDirections.clear();
                     }
                 }
                 else if(game.getPlayer().getPosition().equals(getPosition())) {
