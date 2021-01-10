@@ -3,10 +3,7 @@ package fr.ubx.poo.game;
 
 import fr.ubx.poo.model.Entity;
 import fr.ubx.poo.model.decor.*;
-import fr.ubx.poo.model.decor.collectable.BombNumber;
-import fr.ubx.poo.model.decor.collectable.BombRange;
-import fr.ubx.poo.model.decor.collectable.Key;
-import fr.ubx.poo.model.decor.collectable.Princess;
+import fr.ubx.poo.model.decor.collectable.*;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -44,10 +41,10 @@ public class WorldBuilder {
                 return new Door(true, true);
             case DoorPrevOpened:
                 return new Door(true, false);
-            case DamagedRockPile:
-                return new RockPile(1);
             case RockPile:
                 return new RockPile(2);
+            case DamagedRockPile:
+                return new RockPile(1);
             case Monster:
                 return new Monster(world,pos);
             case Key:
@@ -62,6 +59,8 @@ public class WorldBuilder {
                 return new BombNumber(-1);
             case BombNumberInc:
                 return new BombNumber(1);
+            case Heart:
+                return new Heart(1);
             default:
                 return null;
         }

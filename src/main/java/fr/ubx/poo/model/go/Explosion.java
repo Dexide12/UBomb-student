@@ -76,7 +76,6 @@ public class Explosion extends GameObject {
                     spreadingDirections.clear();
                     b.explode(now);
                 }
-                //Todo check for monsters when added to game
             }
         }
     }

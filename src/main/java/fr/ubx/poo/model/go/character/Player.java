@@ -43,6 +43,9 @@ public class Player extends Character {
         if(bombsRange < 1){
             bombsRange = 1;
         }
+        if(bombsRange > 9 ){
+            bombsRange = 9;
+        }
     }
 
     public void addBombCapacity(int value){
@@ -50,17 +53,28 @@ public class Player extends Character {
         if(bombCapacity < 1){
             bombCapacity = 1;
         }
+        if(bombCapacity > 9){
+            bombCapacity = 9;
+        }
     }
 
     public void addKey(){
         keys += 1;
+        if(keys > 9){
+            keys = 9;
+        }
     }
 
     public void win(){
         winner = true;
     }
 
-
+    public void healing(int value){
+        lives += value;
+        if (lives > 9){
+            lives = 9;
+        }
+    }
 
     public boolean requestOpenDoor() {
         if(keys > 0) {
@@ -108,12 +122,6 @@ public class Player extends Character {
             }
         }
         moveRequested = false;
-        Decor d = game.getCurrentWorld().get(getPosition());
-        if (d != null){
-            if (d.makeDamage()){
-                takeDamage(1,now);
-            }
-        }
         if(lives == 0) {
             alive = false;
         }

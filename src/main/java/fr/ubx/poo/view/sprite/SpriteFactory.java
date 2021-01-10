@@ -8,10 +8,7 @@ import static fr.ubx.poo.view.image.ImageResource.*;
 
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.model.decor.*;
-import fr.ubx.poo.model.decor.collectable.BombNumber;
-import fr.ubx.poo.model.decor.collectable.BombRange;
-import fr.ubx.poo.model.decor.collectable.Key;
-import fr.ubx.poo.model.decor.collectable.Princess;
+import fr.ubx.poo.model.decor.collectable.*;
 import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.Explosion;
 import fr.ubx.poo.model.go.character.Player;
@@ -35,6 +32,9 @@ public final class SpriteFactory {
                 return new SpriteDecor(layer, factory.get(DOOR_OPENED), position);
             else
                 return new SpriteDecor(layer, factory.get(DOOR_CLOSED), position);
+        }
+        if(decor instanceof Heart){
+            return new SpriteDecor(layer, factory.get(HEART), position);
         }
         if(decor instanceof RockPile) {
             if(decor.getResistance() == 2) {

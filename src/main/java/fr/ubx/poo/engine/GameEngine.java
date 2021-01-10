@@ -162,7 +162,7 @@ public final class GameEngine {
 
     private void update(long now) {
         updatePlayer(now);
-        updateLevel();
+        updateLevel(now);
         updateMonster(now);
         updateDecorSprites(now);
         updateBombsSprites();
@@ -197,12 +197,14 @@ public final class GameEngine {
         Collection<Decor> decors = new ArrayList<>(game.getCurrentWorld().values());
         for(Decor d : decors){
             if(d instanceof Monster){
-                ((Monster) d).update(now);
+                if(d.getResistance() > 0) {
+                    ((Monster) d).update(now);
+                }
             }
         }
     }
 
-    private void updateLevel() {
+    private void updateLevel(long now) {
         if(player.getHasMove()) {
             Decor d = game.getCurrentWorld().get(player.getPosition());
             if(d instanceof Door) {
@@ -215,6 +217,11 @@ public final class GameEngine {
                         game.setCurrentLevel(false);
                         createAndDisplayScene(false);
                     }
+                }
+            }
+            if (d instanceof Monster){
+                if(d.getResistance() > 0) {
+                    player.takeDamage(1, now);
                 }
             }
             if(d instanceof Collectable){
@@ -238,6 +245,12 @@ public final class GameEngine {
                 }
                 if(d instanceof Princess){
                     player.win();
+                }
+                if(d instanceof Heart){
+                    if(!((Heart) d).collected()){
+                        player.healing(((Heart) d).getValue());
+                        ((Heart) d).collect();
+                    }
                 }
             }
 
